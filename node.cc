@@ -277,6 +277,7 @@ void server_thread(Node* node) {
 }
 
 int main(int argc, char** argv) {
+    //hello from layana
     int n, k, alpha, beta;
     n = stoi(string(argv[2]));
     k = stoi(string(argv[3]));
