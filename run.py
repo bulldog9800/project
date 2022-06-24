@@ -1,9 +1,11 @@
 import os
+from struct import calcsize
 import subprocess
 import random
 import sys
 import getopt
 import time
+from time import sleep
 
 
 def run_nodes(n, k, alpha, beta):
@@ -39,15 +41,31 @@ def run_nodes(n, k, alpha, beta):
         processes.append(p)
         # p.communicate()
 
+    
     while True:
         with open(r"files/times.txt", 'r') as times_file:
-            x = len(times_file.readlines())
-            if x == n:
+            lines = times_file.readlines()
+            x = len(lines)
+            if x >= int(n):
                 print("All nodes finished!")
+                max_time = 0
+                reds = 0
+                blues = 0
+                for line in lines:
+                    splitted = line.split()
+                    finish_time = int(splitted[1])
+                    max_time = max(max_time, finish_time)
+                    if splitted[0] == "R":
+                        reds += 1
+                    elif splitted[0] == "B":
+                        blues +=1
+                    blues_percentage = float(blues) / float(n)
+                    reds_percentage = float(reds) / float(n)
+                print("The maximal time it took is:" + str(max_time))
+                print(max(blues_percentage, reds_percentage)*100,"% of the nodes reached the same the decision")
                 break
-            time.sleep(2)
-            
-
+        sleep(1)
+             
     for p in processes:
         p.wait()
 
