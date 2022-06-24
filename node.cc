@@ -107,7 +107,7 @@ public:
         infile >> is_byzantine1;
         this->color=color1;
         stringToColor();
-        this->is_byzantine=(bool)(is_byzantine1);
+        this->is_byzantine=(bool)(false);
         this->start_time = time(NULL);
 
       //  cout << "id= "<< this->id <<" color: "<< this->color << " port: " << this->port << endl;
@@ -207,8 +207,9 @@ public:
                 if(colors_counter2[col1] >= alpha){
                     maj = true;
                     colors_counter1[col1]++;
-                    if(colors_counter1[col1] > colors_counter1[col])
-                        col=col1;
+                    if(colors_counter1[col1] > colors_counter1[this->color_enum])
+                        this->color_enum = col1;
+                        colorToString();
                     if(col1 != last_color){
                         last_color = col1;
                         same_color_in_a_row_count = 1;
