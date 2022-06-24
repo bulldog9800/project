@@ -14,6 +14,7 @@
 #include <iterator>
 #include <algorithm>
 #include <random>
+#include <ctime>
 
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include <grpcpp/grpcpp.h>
@@ -86,6 +87,7 @@ class Node {
     string port;
     int config_fd;
     bool is_byzantine;
+    time_t start_time;
 public:
     Node(string id){
         string config_file_name = "config_" + id + ".txt";
@@ -107,6 +109,7 @@ public:
         this->color=color1;
         stringToColor();
         this->is_byzantine=(bool)(false);
+        this->start_time = time(NULL);
 
         cout << "id= "<< this->id <<" color: "<< this->color << " port: " << this->port << endl;
     }
@@ -211,10 +214,17 @@ public:
                         same_color_in_a_row_count++;
                     }
                     if(same_color_in_a_row_count >= beta){
+                        time_t current_time, diff_time;
+                        current_time=time(NULL);
+                        diff_time=current_time-start_time;
                         undecided = false;
                         this->color_enum=col1;
                         colorToString();
-                        cout << "Decided! the color is: " << this->color << endl;
+                        string times_file_path = "files/times.txt";
+                        std::ofstream times_file;
+                        times_file.open(times_file_path,std::ios_base::app);
+                        times_file  << this->color <<" " << diff_time << endl;
+                        times_file.close();
                     }
                 }
             }
