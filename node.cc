@@ -91,7 +91,6 @@ class Node {
 public:
     Node(string id){
         string config_file_name = "config_" + id + ".txt";
-        //string path_file1 = "/mnt/c/Users/layana/Desktop/grpc/examples/cpp/query/" + config_file_name;
         string path_file = "files/" + config_file_name;
         const char* path=path_file.c_str();
         this->id = stoi(id);
@@ -105,24 +104,27 @@ public:
         string color1;
         infile >> id1;
         infile >> color1;
-        //infile >> is_byzantine1;
+        infile >> is_byzantine1;
         this->color=color1;
         stringToColor();
-        this->is_byzantine=(bool)(false);
+        this->is_byzantine=(bool)(is_byzantine1);
         this->start_time = time(NULL);
 
-        cout << "id= "<< this->id <<" color: "<< this->color << " port: " << this->port << endl;
+      //  cout << "id= "<< this->id <<" color: "<< this->color << " port: " << this->port << endl;
     }
 
     int getId(){
         return id;
     }
+
     string getColor(){
         return color;
     }
+
     string getPort(){
         return port;
     }
+
     bool getIsByzantine(){
         return is_byzantine;
     }
@@ -274,7 +276,7 @@ void RunServer(Node* node) {
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr <Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << server_address << std::endl;
+    //std::cout << "Server listening on " << server_address << std::endl;
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
@@ -295,7 +297,7 @@ int main(int argc, char** argv) {
     beta = stoi(string(argv[5]));
 
     if(argc == 2){
-        cout << argv[1] << endl;
+       // cout << argv[1] << endl;
     }
     assert(argc > 1);
     string id = string(argv[1]);
