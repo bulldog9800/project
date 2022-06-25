@@ -107,7 +107,7 @@ public:
         infile >> is_byzantine1;
         this->color=color1;
         stringToColor();
-        this->is_byzantine=(bool)(false);
+        this->is_byzantine=(bool)(is_byzantine1);
         this->start_time = time(NULL);
 
       //  cout << "id= "<< this->id <<" color: "<< this->color << " port: " << this->port << endl;

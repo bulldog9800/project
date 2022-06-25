@@ -12,13 +12,15 @@ from collections import namedtuple
 configTuple = namedtuple('run_tuple', ['n', 'k', 'alpha', 'beta', 'reds', 'blues', 'byzantines'])
 
 
-def run_nodes(run_tuple: configTuple):
+def run_nodes(run_tuple: configTuple, results_file):
     write_config_object(run_tuple)
 
     colors = ['R', 'B', 'U']
 
     times_file = open("files/times.txt", "w")
     times_file.close()
+
+    timeout = run_tuple.n
 
     for i in range(1, run_tuple.n + 1):
         file_name = "files/config_" + str(i) + ".txt"
@@ -30,7 +32,7 @@ def run_nodes(run_tuple: configTuple):
 
         config_file = open(file_name, "w")
         config_file.write(str(i) + "\n")
-        
+
         if i <= run_tuple.reds:
             config_file.write(colors[0] + "\n")
         elif i <= run_tuple.reds + run_tuple.blues:
@@ -52,10 +54,15 @@ def run_nodes(run_tuple: configTuple):
         processes.append(p)
         # p.communicate()
 
+    start = time.time()
     while True:
         with open(r"files/times.txt", 'r') as times_file:
             lines = times_file.readlines()
             x = len(lines)
+            current_time = time.time()
+            if current_time - start > timeout:
+                print(f"Timed out!\nCould not reach a decision within {timeout} seconds")
+                break
             if x >= run_tuple.n:
                 print("All nodes finished!")
                 max_time = 0
@@ -72,12 +79,16 @@ def run_nodes(run_tuple: configTuple):
                     blues_percentage = float(blue_nodes) / float(run_tuple.n)
                     reds_percentage = float(red_nodes) / float(run_tuple.n)
 
+                results_file.write("The decision was: " + ("Blue" if blues_percentage > reds_percentage else "Red") + "\n")
+                results_file.write("The maximal time it took is:" + str(max_time) + "\n")
+                results_file.write(str(max(blues_percentage, reds_percentage)*100) + "% of the nodes reached the same the decision\n")
+
                 print("The decision was: ", "Blue" if blues_percentage > reds_percentage else "Red")
                 print("The maximal time it took is:" + str(max_time))
                 print(max(blues_percentage, reds_percentage)*100, "% of the nodes reached the same the decision")
                 break
         sleep(1)
-             
+
     for p in processes:
         p.kill()
 
@@ -92,36 +103,27 @@ def write_config_object(run_tuple: configTuple):
 
 
 def main():
-    """
-    try:
-        opts, args = getopt.getopt(argv, "n:k:a:b:", ["alpha=", "beta="])
-    except getopt.GetoptError:
-        print("Wrong format")
-        sys.exit(2)
 
-    for opt, arg in opts:
-        if opt == '-n':
-            n = arg
-        elif opt == '-k':
-            k = arg
-        elif opt in ('-a', '--alpha'):
-            alpha = arg
-        elif opt in ('-b', '--beta'):
-            beta = arg
-    """
+    file_name = "files/results.txt"
+
+    results_file = open(file_name, "w")
+    results_file.write("The Results of 5 trials: \n")
     # tuples = generate_concecutive_tuples()
     # tuples = generate_basic_tuples()
     tuples = generate_minimum_tuples()
 
     for t in tuples:
-        print("reached here")
-        run_nodes(run_tuple=t)
+        results_file.write("the configiration is : " + str(t) + "\n")
+        run_nodes(run_tuple=t,results_file=results_file)
+
 
 
 def generate_minimum_tuples():
     tuples = [(configTuple(100, 40, 25, 5, 60, 35, 10)),
               (configTuple(100, 40, 25, 5, 60, 35, 20)),
-              (configTuple(100, 40, 25, 5, 60, 35, 30))]
+              (configTuple(100, 40, 25, 5, 60, 40, 10)),
+              (configTuple(100, 30, 20, 5, 60, 35, 10)),
+              (configTuple(100, 30, 20, 5, 25, 60, 10))]
     return tuples
 
 
