@@ -38,38 +38,38 @@ using std::string;
 
 class QueryClient {
 public:
- QueryClient(std::shared_ptr<Channel> channel)
-     : stub_(Query::NewStub(channel)) {}
+    QueryClient(std::shared_ptr<Channel> channel)
+            : stub_(Query::NewStub(channel)) {}
 
- // Assembles the client's payload, sends it and presents the response back
- // from the server.
- std::string AskColor(const std::string& color) {
-   // Data we are sending to the server.
-   ColorRequest request;
-   request.set_color(color);
+    // Assembles the client's payload, sends it and presents the response back
+    // from the server.
+    std::string AskColor(const std::string& color) {
+        // Data we are sending to the server.
+        ColorRequest request;
+        request.set_color(color);
 
-   // Container for the data we expect from the server.
-   ColorReply reply;
+        // Container for the data we expect from the server.
+        ColorReply reply;
 
-   // Context for the client. It could be used to convey extra information to
-   // the server and/or tweak certain RPC behaviors.
-   ClientContext context;
+        // Context for the client. It could be used to convey extra information to
+        // the server and/or tweak certain RPC behaviors.
+        ClientContext context;
 
-   // The actual RPC.
-   Status status = stub_->AskColor(&context, request, &reply);
+        // The actual RPC.
+        Status status = stub_->AskColor(&context, request, &reply);
 
-   // Act upon its status.
-   if (status.ok()) {
-     return reply.reply();
-   } else {
-     std::cout << status.error_code() << ": " << status.error_message()
-               << std::endl;
-     return "RPC failed";
-   }
- }
+        // Act upon its status.
+        if (status.ok()) {
+            return reply.reply();
+        } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                      << std::endl;
+            return "RPC failed";
+        }
+    }
 
 private:
- std::unique_ptr<Query::Stub> stub_;
+    std::unique_ptr<Query::Stub> stub_;
 };
 
 /*

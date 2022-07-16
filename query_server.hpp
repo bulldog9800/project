@@ -32,6 +32,8 @@
 
 #endif
 
+#include "node.hpp"
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -40,18 +42,33 @@ using query::Query;
 using query::ColorReply;
 using query::ColorRequest;
 
-// Logic and data behind the server's behavior.
 class QueryServiceImpl final : public Query::Service {
+    Node* node;
     Status AskColor(ServerContext *context, const ColorRequest *request,
                     ColorReply *reply) override {
-        reply->set_reply("My color is red");
+        if(node->getColor() == "U"){
+            node->setColor(request->color());
+            //cout << "the color changed" << node->getColor() << endl;
+        }
+        if(node->getIsByzantine()){
+            if(request->color() == "R"){
+                reply->set_reply("B");
+            } else {
+                reply->set_reply("R");
+            }
+            return Status::OK;
+        }
+        reply->set_reply(node->getColor());
         return Status::OK;
+    }
+public:
+    QueryServiceImpl(Node* node) : node(node){
     }
 };
 
-void RunServer(std::string port_num) {
-    std::string server_address("0.0.0.0:" + port_num);
-    QueryServiceImpl service;
+void RunServer(Node* node) {
+    std::string server_address("0.0.0.0:" + node->getPort());
+    QueryServiceImpl service(node);
 
     grpc::EnableDefaultHealthCheckService(true);
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
@@ -63,7 +80,7 @@ void RunServer(std::string port_num) {
     builder.RegisterService(&service);
     // Finally assemble the server.
     std::unique_ptr <Server> server(builder.BuildAndStart());
-    std::cout << "Server listening on " << server_address << std::endl;
+    //std::cout << "Server listening on " << server_address << std::endl;
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
