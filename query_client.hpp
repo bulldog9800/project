@@ -55,8 +55,11 @@ public:
         // the server and/or tweak certain RPC behaviors.
         ClientContext context;
 
+        CompletionQueue cq;
+
         // The actual RPC.
         Status status = stub_->AskColor(&context, request, &reply);
+        stub_->AsyncAskColor()
 
         // Act upon its status.
         if (status.ok()) {

@@ -44,6 +44,7 @@ using query::ColorRequest;
 
 class QueryServiceImpl final : public Query::Service {
     Node* node;
+    
     Status AskColor(ServerContext *context, const ColorRequest *request,
                     ColorReply *reply) override {
         if(node->getColor() == "U"){
@@ -60,6 +61,9 @@ class QueryServiceImpl final : public Query::Service {
         }
         reply->set_reply(node->getColor());
         return Status::OK;
+    }
+    Status SayReady(ServerContext *context){
+
     }
 public:
     QueryServiceImpl(Node* node) : node(node){
