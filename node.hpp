@@ -74,5 +74,23 @@ public:
     string Snowball(int n, int k, int alpha, int beta);
 };
 
+class Coordinator {
+    int n;
+    int numOfConnectedNodes;
+    string port_num;
+    vector<string> nodes_ports;
+
+public:
+    Coordinator(int n);
+    string getCPort();
+    int getNumOfConnectedNodes();
+    vector<string> getVector();
+    void addNum();
+    void addToVector(string node_port);
+};
+
+void ready_thread(Node* node);
+void server_thread(Node* node);
+void server_cthread(Coordinator* coordinator);
 
 #endif

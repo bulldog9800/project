@@ -242,7 +242,36 @@ void ready_thread(Node* node) {
     query.SayReady(node->getPort());
 }
 
-int main(int argc, char** argv) {
+Coordinator::Coordinator(int n): n(n),nodes_ports(n) {
+    this->numOfConnectedNodes=0;
+    this->port_num = "50000";
+}
+
+string Coordinator::getCPort() {
+    return this->port_num;
+}
+
+int Coordinator::getNumOfConnectedNodes(){
+    return numOfConnectedNodes;
+}
+
+vector<string> Coordinator::getVector(){
+    return nodes_ports;
+}
+
+void Coordinator::addNum() {
+    (this->numOfConnectedNodes)++;
+}
+
+void Coordinator::addToVector(string node_port){
+    nodes_ports.push_back(node_port);
+}
+
+void server_cthread(Coordinator* coordinator) {
+    RunServer(NULL, coordinator);
+}
+
+/* int main(int argc, char** argv) {
     //hello from layana
     int n, k, alpha, beta;
     n = stoi(string(argv[2]));
@@ -261,6 +290,4 @@ int main(int argc, char** argv) {
     th1.join();
 
     return 0;
-} 
-
-
+} */

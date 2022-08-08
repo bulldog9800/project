@@ -58,10 +58,10 @@ target_link_libraries(hw_grpc_proto
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-        node
-        coordinator
-        )
-  add_executable(${_target} "${_target}.cc")
+        node_main
+        coordinator_main
+        )    
+  add_executable(${_target} "${_target}.cc" "node.cc")
   target_link_libraries(${_target}
           hw_grpc_proto
           ${_REFLECTION}

@@ -47,10 +47,10 @@ void Coordinator::addToVector(string node_port){
 }
 
 void server_thread(Coordinator* coordinator) {
-    RunServer(NULL,coordinator);
+    RunServer(NULL, coordinator);
 }
 
-int main(int argc, char** argv){
+/* int main(int argc, char** argv){
     int n;
     n = stoi(string(argv[1]));
     Coordinator c1(n);
@@ -61,5 +61,5 @@ int main(int argc, char** argv){
         query.SayStart("start");
     }
     return 0;
-}
+} */
 

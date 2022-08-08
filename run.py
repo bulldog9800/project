@@ -48,9 +48,12 @@ def run_nodes(run_tuple: configTuple, results_file):
         config_file.close()
 
     processes = []
+    p = subprocess.Popen(["cmake/build/coordinator_main", f"{run_tuple.n}"])
+    processes.append(p)
+
     for i in range(1, run_tuple.n + 1):
         p = subprocess.Popen(
-            ["cmake/build/node", f"{i}", f"{run_tuple.n}", f"{run_tuple.k}", f"{run_tuple.alpha}", f"{run_tuple.beta}"])
+            ["cmake/build/node_main", f"{i}", f"{run_tuple.n}", f"{run_tuple.k}", f"{run_tuple.alpha}", f"{run_tuple.beta}"])
         processes.append(p)
         # p.communicate()
 
@@ -79,9 +82,9 @@ def run_nodes(run_tuple: configTuple, results_file):
                     blues_percentage = float(blue_nodes) / float(run_tuple.n)
                     reds_percentage = float(red_nodes) / float(run_tuple.n)
 
-                results_file.write("The decision was: " + ("Blue" if blues_percentage > reds_percentage else "Red"))
-                results_file.write("The maximal time it took is:" + str(max_time))
-                results_file.write(str(max(blues_percentage, reds_percentage)*100) + "% of the nodes reached the same the decision")
+                results_file.write("The decision was: " + ("Blue" if blues_percentage > reds_percentage else "Red") + "\n")
+                results_file.write("The maximal time it took is:" + str(max_time) + "\n")
+                results_file.write(str(max(blues_percentage, reds_percentage)*100) + "% of the nodes reached the same the decision\n")
 
                 print("The decision was: ", "Blue" if blues_percentage > reds_percentage else "Red")
                 print("The maximal time it took is:" + str(max_time))
@@ -110,7 +113,8 @@ def main():
     results_file.write("The Results of 5 trials: \n")
     # tuples = generate_concecutive_tuples()
     # tuples = generate_basic_tuples()
-    tuples = generate_minimum_tuples()
+    # tuples = generate_minimum_tuples()
+    tuples = [(configTuple(10, 4, 3, 2, 6, 3, 1))]
 
     for t in tuples:
         results_file.write("the configiration is : " + str(t) + "\n")

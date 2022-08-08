@@ -15,6 +15,8 @@
 * limitations under the License.
 *
 */
+#ifndef QUERY_SERVER_HPP
+#define QUERY_SERVER_HPP
 
 #include <iostream>
 #include <memory>
@@ -31,7 +33,6 @@
 #endif
 
 #include "node.hpp"
-#include "coordinator.hpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -118,3 +119,5 @@ int main(int argc, char **argv) {
 
     return 0;
 } */
+
+#endif
