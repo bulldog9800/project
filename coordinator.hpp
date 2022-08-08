@@ -38,9 +38,18 @@ using std::vector;
 
 class Coordinator {
     int n;
+    int numOfConnectedNodes;
     string port_num;
+    vector<string> nodes_ports;
+
 public:
-    Coordinator(int num_of_nodes);
-}
+    Coordinator(int n);
+    string getCPort();
+    int getNumOfConnectedNodes();
+    vector<string> getVector();
+    void addNum();
+    void addToVector(string node_port);
+
+};
 
 #endif

@@ -34,12 +34,15 @@ using grpc::Status;
 using query::Query;
 using query::ColorReply;
 using query::ColorRequest;
+using query::ReadyReply;
+using query::ReadyRequest;
+using query::StartReply;
+using query::StartRequest;
 using std::string;
 
 class QueryClient {
 public:
-    QueryClient(std::shared_ptr<Channel> channel)
-            : stub_(Query::NewStub(channel)) {}
+    QueryClient(std::shared_ptr<Channel> channel): stub_(Query::NewStub(channel)) {}
 
     // Assembles the client's payload, sends it and presents the response back
     // from the server.
@@ -55,13 +58,45 @@ public:
         // the server and/or tweak certain RPC behaviors.
         ClientContext context;
 
-        CompletionQueue cq;
+        //CompletionQueue cq;
 
         // The actual RPC.
         Status status = stub_->AskColor(&context, request, &reply);
-        stub_->AsyncAskColor()
+        //stub_->AsyncAskColor()
 
         // Act upon its status.
+        if (status.ok()) {
+            return reply.reply();
+        } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                      << std::endl;
+            return "RPC failed";
+        }
+    }
+
+    std::string SayReady(const std::string& port){
+        // Data we are sending to the server.
+        ReadyRequest request;
+        request.set_port(port);
+        ReadyReply reply;
+        ClientContext context;
+        Status status = stub_->SayReady(&context, request, &reply);
+        // Act upon its status.
+        if (status.ok()) {
+            return reply.reply();
+        } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                      << std::endl;
+            return "RPC failed";
+        }
+    }
+
+    std::string SayStart(const std::string& start){
+        StartRequest request;
+        request.set_start(start);
+        StartReply reply;
+        ClientContext context;
+        Status status = stub_->SayStart(&context, request, &reply);
         if (status.ok()) {
             return reply.reply();
         } else {

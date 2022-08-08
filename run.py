@@ -79,9 +79,9 @@ def run_nodes(run_tuple: configTuple, results_file):
                     blues_percentage = float(blue_nodes) / float(run_tuple.n)
                     reds_percentage = float(red_nodes) / float(run_tuple.n)
 
-                results_file.write("The decision was: " + ("Blue" if blues_percentage > reds_percentage else "Red") + "\n")
-                results_file.write("The maximal time it took is:" + str(max_time) + "\n")
-                results_file.write(str(max(blues_percentage, reds_percentage)*100) + "% of the nodes reached the same the decision\n")
+                results_file.write("The decision was: " + ("Blue" if blues_percentage > reds_percentage else "Red"))
+                results_file.write("The maximal time it took is:" + str(max_time))
+                results_file.write(str(max(blues_percentage, reds_percentage)*100) + "% of the nodes reached the same the decision")
 
                 print("The decision was: ", "Blue" if blues_percentage > reds_percentage else "Red")
                 print("The maximal time it took is:" + str(max_time))

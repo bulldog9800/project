@@ -47,19 +47,25 @@ class Node {
     string color;
     Color color_enum;
     string port;
+    bool is_server_ready;
+    bool to_start;
     int config_fd;
     bool is_byzantine;
     time_t start_time;
 public:
     Node(string id);
-
     int getId();
     string getColor();
     string getPort();
     bool getIsByzantine();
+    bool getIsServerReady();
+    bool getToStart();
     void setColor(string new_color);
+    void setReady();
+    void setStart();
     void colorToString();
     void stringToColor();
+
     /***
      * Given n and k, picks k elements from the set {1...n}/{my_id}
      ***/

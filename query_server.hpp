@@ -27,12 +27,11 @@
 #ifdef BAZEL_BUILD
 #include "examples/protos/query.grpc.pb.h"
 #else
-
 #include "query.grpc.pb.h"
-
 #endif
 
 #include "node.hpp"
+#include "coordinator.hpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -44,9 +43,9 @@ using query::ColorRequest;
 
 class QueryServiceImpl final : public Query::Service {
     Node* node;
+    Coordinator* coordinator;
     
-    Status AskColor(ServerContext *context, const ColorRequest *request,
-                    ColorReply *reply) override {
+    Status AskColor(ServerContext *context, const ColorRequest *request,ColorReply *reply) override {
         if(node->getColor() == "U"){
             node->setColor(request->color());
             //cout << "the color changed" << node->getColor() << endl;
@@ -62,17 +61,36 @@ class QueryServiceImpl final : public Query::Service {
         reply->set_reply(node->getColor());
         return Status::OK;
     }
-    Status SayReady(ServerContext *context){
-
+    Status SayReady(ServerContext *context, const ReadyRequest *request,ReadyReply *reply)override{
+        coordinator->addNum();
+        string port_num = request->port();
+        coordinator->addToVector(port_num);
+        reply->set_reply("PORT RECEIVED");
+        return Status::OK;
     }
+
+    Status SayStart(ServerContext *context, const StartRequest *request,StartReply *reply)override{
+        node->setStart();
+        reply->set_reply("Start");
+        return Status::OK;
+    }
+
 public:
-    QueryServiceImpl(Node* node) : node(node){
+    QueryServiceImpl(Node* node,Coordinator* coordinator){
+        this->node=node;
+        this->coordinator=coordinator;
     }
 };
 
-void RunServer(Node* node) {
-    std::string server_address("0.0.0.0:" + node->getPort());
-    QueryServiceImpl service(node);
+void RunServer(Node* node1, Coordinator* coordinator1) {
+    std::string server_address;
+    if(node1){
+        server_address="0.0.0.0:" + node1->getPort();
+        }
+    else{
+        server_address="0.0.0.0:" + coordinator1->getCPort();
+        }
+    QueryServiceImpl service(node1,coordinator1);
 
     grpc::EnableDefaultHealthCheckService(true);
     grpc::reflection::InitProtoReflectionServerBuilderPlugin();
@@ -85,6 +103,8 @@ void RunServer(Node* node) {
     // Finally assemble the server.
     std::unique_ptr <Server> server(builder.BuildAndStart());
     //std::cout << "Server listening on " << server_address << std::endl;
+    if(node1)
+        node1->setReady();
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.

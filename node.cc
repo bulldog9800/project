@@ -49,7 +49,7 @@ Node::Node(string id){
 
     this->id = stoi(id);
     int port1 = (50000 + this->id);
-    this->port = to_string(port1);\
+    this->port = to_string(port1);
 
     ifstream infile(path);
     if (!infile.is_open()) {
@@ -65,8 +65,10 @@ Node::Node(string id){
 
     this->color=color1;
     stringToColor();
+    this->is_server_ready= false;
+    this->to_start= false;
     this->is_byzantine=(bool)(is_byzantine1);
-    this->start_time = time(NULL);
+
 }
 
 int Node::getId() {
@@ -85,9 +87,25 @@ bool Node::getIsByzantine() {
     return is_byzantine;
 }
 
+bool Node::getIsServerReady(){
+    return is_server_ready;
+}
+
+bool Node::getToStart() {
+    return to_start;
+}
+
 void Node::setColor(string new_color) {
     this->color=new_color;
     stringToColor();
+}
+
+void Node::setReady(){
+    this->is_server_ready= true;
+}
+
+void Node::setStart(){
+    this->to_start= true;
 }
 
 void Node::colorToString() {
@@ -119,7 +137,6 @@ void Node::stringToColor() {
  ***/
 vector<int> Node::getSample(int n,int k) {
     vector<int> v1(n),v2;
-
     for(int i=0; i<n; i++) {
         v1[i]=i+1;
     }
@@ -161,8 +178,9 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
     Color colors[2] = {RED, BLUE};
     Color col = this->color_enum;
     Color last_color = this->color_enum;
-
     bool undecided = true;
+
+    this->start_time = time(NULL);
 
     while(undecided){
         if (this->color_enum == UNCOLORED) {
@@ -214,8 +232,14 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
 }
 
 void server_thread(Node* node) {
-    //hello sari
-    RunServer(node);
+    RunServer(node,NULL);
+}
+
+void ready_thread(Node* node) {
+    while (!(node->getIsServerReady()));
+    string target_str=to_string(50000);
+    QueryClient query(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
+    query.SayReady(node->getPort());
 }
 
 int main(int argc, char** argv) {
@@ -230,6 +254,9 @@ int main(int argc, char** argv) {
     string id = string(argv[1]);
     Node n1(id);
     thread th1(server_thread, &n1);
+    //thread th2(ready_thread, &n1);
+    ready_thread(&n1);
+    while (!(n1.getToStart()));
     n1.Snowball(n, k, alpha, beta);
     th1.join();
 
