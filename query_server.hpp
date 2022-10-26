@@ -63,9 +63,15 @@ class QueryServiceImpl final : public Query::Service {
         return Status::OK;
     }
     Status SayReady(ServerContext *context, const ReadyRequest *request,ReadyReply *reply)override{
-        coordinator->addNum();
         string port_num = request->port();
         coordinator->addToVector(port_num);
+        std::cout << "Vector: ";
+        for (auto s : coordinator->getVector()) {
+            std::cout << s << ", ";
+        }
+        std::cout << std::endl;
+        
+        coordinator->addNum();
         reply->set_reply("PORT RECEIVED");
         return Status::OK;
     }
@@ -104,8 +110,12 @@ void RunServer(Node* node1, Coordinator* coordinator1) {
     // Finally assemble the server.
     std::unique_ptr <Server> server(builder.BuildAndStart());
     //std::cout << "Server listening on " << server_address << std::endl;
-    if(node1)
+    if(node1) {
         node1->setReady();
+    }
+    if (coordinator1) {
+        std::cout << "Coordinator listening\n";
+    }
 
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.

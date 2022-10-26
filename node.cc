@@ -101,7 +101,8 @@ void Node::setColor(string new_color) {
 }
 
 void Node::setReady(){
-    this->is_server_ready= true;
+    this->is_server_ready = true;
+    std::cout << "Node server is ready\n";
 }
 
 void Node::setStart(){
@@ -236,14 +237,15 @@ void server_thread(Node* node) {
 }
 
 void ready_thread(Node* node) {
+    string res;
     while (!(node->getIsServerReady()));
     //string target_str=to_string(50020);
     string target_str = "localhost:50020";
     QueryClient query(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
-    query.SayReady(node->getPort());
+    res = query.SayReady(node->getPort());
 }
 
-Coordinator::Coordinator(int n): n(n),nodes_ports(n) {
+Coordinator::Coordinator(int n): n(n),nodes_ports(0) {
     this->numOfConnectedNodes=0;
     this->port_num = "50020";
 }

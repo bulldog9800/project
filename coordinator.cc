@@ -21,7 +21,8 @@
 #include "coordinator.hpp"
 #include "query_server.hpp"
 
-Coordinator::Coordinator(int n): n(n),nodes_ports(n) {
+Coordinator::Coordinator(int n): n(n) {
+    this->nodes_ports(0);
     this->numOfConnectedNodes=0;
     this->port_num = "50000";
 }

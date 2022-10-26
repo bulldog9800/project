@@ -82,13 +82,16 @@ public:
         ReadyRequest request;
         request.set_port(port);
         ReadyReply reply;
-        ClientContext context;
-        Status status = stub_->SayReady(&context, request, &reply);
+        Status status;
+        do {
+            ClientContext context;
+            status = stub_->SayReady(&context, request, &reply);
+        } while (!status.ok());
         // Act upon its status.
         if (status.ok()) {
             return reply.reply();
         } else {
-            std::cout << status.error_code() << ": " << status.error_message()
+            std::cout << "Here1: " << status.error_code() << ": " << status.error_message()
                       << std::endl;
             return "RPC failed";
         }
@@ -103,7 +106,7 @@ public:
         if (status.ok()) {
             return reply.reply();
         } else {
-            std::cout << status.error_code() << ": " << status.error_message()
+            std::cout << "Here2: " << status.error_code() << ": " << status.error_message()
                       << std::endl;
             return "RPC failed";
         }
