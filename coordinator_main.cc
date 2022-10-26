@@ -7,7 +7,8 @@ int main(int argc, char** argv){
     thread th1(server_cthread, &c1);
     while (n != c1.getNumOfConnectedNodes());
     for(auto port1: c1.getVector()){
-        QueryClient query(grpc::CreateChannel(port1, grpc::InsecureChannelCredentials()));
+        string target_str = "localhost:" + port1;
+        QueryClient query(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
         query.SayStart("start");
     }
     return 0;

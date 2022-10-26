@@ -51,6 +51,7 @@ def run_nodes(run_tuple: configTuple, results_file):
     p = subprocess.Popen(["cmake/build/coordinator_main", f"{run_tuple.n}"])
     processes.append(p)
 
+
     for i in range(1, run_tuple.n + 1):
         p = subprocess.Popen(
             ["cmake/build/node_main", f"{i}", f"{run_tuple.n}", f"{run_tuple.k}", f"{run_tuple.alpha}", f"{run_tuple.beta}"])
@@ -63,9 +64,9 @@ def run_nodes(run_tuple: configTuple, results_file):
             lines = times_file.readlines()
             x = len(lines)
             current_time = time.time()
-            if current_time - start > timeout:
-                print(f"Timed out!\nCould not reach a decision within {timeout} seconds")
-                break
+            # if current_time - start > timeout:
+            #     print(f"Timed out!\nCould not reach a decision within {timeout} seconds")
+            #     break
             if x >= run_tuple.n:
                 print("All nodes finished!")
                 max_time = 0
