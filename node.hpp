@@ -65,6 +65,7 @@ public:
     void setStart();
     void colorToString();
     void stringToColor();
+    virtual string getReply(string request);
 
     /***
      * Given n and k, picks k elements from the set {1...n}/{my_id}
@@ -72,6 +73,12 @@ public:
     vector<int> getSample(int n,int k);
     int* askSample(int n,int k, int* count);
     string Snowball(int n, int k, int alpha, int beta);
+};
+
+class Byzantine : public Node {
+public:
+    Byzantine(string id);
+    string getReply(string request) override;
 };
 
 class Coordinator {

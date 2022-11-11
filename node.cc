@@ -133,6 +133,20 @@ void Node::stringToColor() {
     }
 }
 
+string Node::getReply(string request) {
+    return color;
+}
+
+Byzantine::Byzantine(string id): Node(id) { }
+
+string Byzantine::getReply(string request) {
+    if (request == "R") {
+        return "B";
+    } else {
+        return "R";
+    }
+}
+
 /***
  * Given n and k, picks k elements from the set {1...n}/{my_id}
  ***/

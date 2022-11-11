@@ -51,15 +51,10 @@ class QueryServiceImpl final : public Query::Service {
             node->setColor(request->color());
             //cout << "the color changed" << node->getColor() << endl;
         }
-        if(node->getIsByzantine()){
-            if(request->color() == "R"){
-                reply->set_reply("B");
-            } else {
-                reply->set_reply("R");
-            }
-            return Status::OK;
-        }
-        reply->set_reply(node->getColor());
+
+        string my_reply = node->getReply(request->color());
+        reply->set_reply(my_reply);
+
         return Status::OK;
     }
     Status SayReady(ServerContext *context, const ReadyRequest *request,ReadyReply *reply)override{
