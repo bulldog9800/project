@@ -253,12 +253,13 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
 
 void server_thread(Node* node) {
     RunServer(node,NULL);
+    string cmd = contact_etcd_cmd + "put ready_node" + node->getId + " ready";
+    cout << exec(cmd);
 }
 
 void ready_thread(Node* node) {
     string res;
     while (!(node->getIsServerReady()));
-    //string target_str=to_string(50020);
     string target_str = "localhost:50020";
     QueryClient query(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
     res = query.SayReady(node->getPort());

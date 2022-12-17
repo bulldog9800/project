@@ -102,4 +102,6 @@ void ready_thread(Node* node);
 void server_thread(Node* node);
 void server_cthread(Coordinator* coordinator);
 
+const string contact_etcd_cmd = "etcdctl --endpoints 172.20.0.5:2379 ";
+
 #endif
