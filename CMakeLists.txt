@@ -61,7 +61,7 @@ foreach(_target
         node_main
         coordinator_main
         )    
-  add_executable(${_target} "${_target}.cc" "node.cc")
+  add_executable(${_target} "${_target}.cc" "node.cc" "helpers.cc")
   target_link_libraries(${_target}
           hw_grpc_proto
           ${_REFLECTION}

@@ -33,6 +33,7 @@
 #endif
 
 #include "node.hpp"
+#include "helpers.hpp"
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -86,11 +87,12 @@ public:
 
 void RunServer(Node* node1, Coordinator* coordinator1) {
     std::string server_address;
+    string ip_addr = getIPAddress();
     if(node1){
-        server_address="0.0.0.0:" + node1->getPort();
+        server_address= ip_addr + ":" + node1->getPort();
         }
     else{
-        server_address="0.0.0.0:" + coordinator1->getCPort();
+        server_address= ip_addr + ":" + coordinator1->getCPort();
         }
     QueryServiceImpl service(node1,coordinator1);
 
@@ -107,6 +109,8 @@ void RunServer(Node* node1, Coordinator* coordinator1) {
     //std::cout << "Server listening on " << server_address << std::endl;
     if(node1) {
         node1->setReady();
+        //TODO: remove next line
+        cout << "Node listeing on address " + server_address << endl;
     }
     if (coordinator1) {
         std::cout << "Coordinator listening\n";

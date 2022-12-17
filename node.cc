@@ -48,7 +48,12 @@ Node::Node(string id){
     const char* path=path_file.c_str();
 
     this->id = stoi(id);
-    int port1 = (50000 + this->id);
+
+    int port1;
+    do {
+        port1 = generateRandomPort();
+    } while (!checkPort(port1));
+
     this->port = to_string(port1);
 
     ifstream infile(path);
