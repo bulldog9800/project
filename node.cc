@@ -253,8 +253,8 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
 
 void server_thread(Node* node) {
     RunServer(node,NULL);
-    string cmd = contact_etcd_cmd + "put ready_node" + node->getId + " ready";
-    cout << exec(cmd);
+    string cmd = contact_etcd_cmd + "put ready_node" + std::to_string(node->getId()) + " ready";
+    cout << exec(cmd.c_str());
 }
 
 void ready_thread(Node* node) {
