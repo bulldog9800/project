@@ -111,6 +111,8 @@ void RunServer(Node* node1, Coordinator* coordinator1) {
         node1->setReady();
         //TODO: remove next line
         cout << "Node listeing on address " + server_address << endl;
+	string cmd = contact_etcd_cmd + "put ready_node" + std::to_string(node1->getId()) + " " + server_address;
+    	cout << exec(cmd.c_str());
     }
     if (coordinator1) {
         std::cout << "Coordinator listening\n";
