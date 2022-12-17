@@ -62,6 +62,7 @@ public:
     bool getIsByzantine();
     bool getIsServerReady();
     bool getToStart();
+    bool checkIfClusterReady(int num_of_nodes);
     void setColor(string new_color);
     void setReady();
     void setStart();
