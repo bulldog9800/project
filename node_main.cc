@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     Node* n1 = returnNode(id);
     thread th1(server_thread, n1);
     //thread th2(ready_thread, &n1);
-    ready_thread(n1);
+    //ready_thread(n1);
     while (!(n1->checkIfClusterReady(n)));
     cout << "Cluster is ready!" << endl;
     n1->Snowball(n, k, alpha, beta);

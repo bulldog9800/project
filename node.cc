@@ -196,7 +196,7 @@ bool Node::checkIfClusterReady(int num_of_nodes) {
     string output = exec(get_ready_nodes_cmd.c_str());
 
     int num_of_lines_in_output = std::count(output.begin(), output.end(), '\n');
-    assert(!num_of_lines_in_output%2);
+    assert(!(num_of_lines_in_output%2));
 
     int ready_nodes = num_of_lines_in_output / 2;
     assert(ready_nodes <= num_of_nodes);
