@@ -193,7 +193,7 @@ int* Node::askSample(int n,int k, int* count) {
 
 bool Node::checkIfClusterReady(int num_of_nodes) {
     string get_ready_nodes_cmd = contact_etcd_cmd + "get --prefix ready_node";
-    string output = exec(get_ready_nodes_cmd);
+    string output = exec(get_ready_nodes_cmd.c_str());
 
     int num_of_lines_in_output = std::count(output.begin(), output.end(), '\n');
     assert(!num_of_lines_in_output%2);
