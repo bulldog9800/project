@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <random>
 #include <ctime>
+#include <sstream>
 
 #include <grpcpp/ext/proto_server_reflection_plugin.h>
 #include <grpcpp/grpcpp.h>
@@ -41,6 +42,7 @@ using std::ifstream;
 using std::endl;
 using std::to_string;
 using std::vector;
+using std::istringstream;
 
 Node::Node(string id){
     string config_file_name = "config_" + id + ".txt";
@@ -168,18 +170,26 @@ vector<int> Node::getSample(int n,int k) {
     return v2;
 }
 
+string getEtcdValue(string output){
+    istringstream ss(output);
+    string tmp;
+    std::getline(ss,tmp,'\n');
+    std::getline(ss,tmp,'\n');
+    return tmp;
+}
+
 int* Node::askSample(int n,int k, int* count) {
     vector<int> sample=getSample(n,k);
 
     for(auto i : sample) {
-        int port1 = 50000+i;
-        string port_string = to_string(port1);
-        string target_str = "localhost:" + port_string;
+        string get_ready_nodes_cmd = contact_etcd_cmd + "get ready_node" + std::to_string(i);
+        string output = exec(get_ready_nodes_cmd.c_str());
+        string address=getEtcdValue(output);
 
-        QueryClient query(grpc::CreateChannel(target_str, grpc::InsecureChannelCredentials()));
+        QueryClient query(grpc::CreateChannel(address, grpc::InsecureChannelCredentials()));
         std::string reply = query.AskColor(this->color);
 
-        //std::cout << "Asker received: " << reply << std::endl;
+        std::cout << "Asker received: " << reply << std::endl;
         if (reply == "R"){
             count[0]++;
         } else if (reply == "B") {
