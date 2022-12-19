@@ -274,6 +274,7 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
             same_color_in_a_row_count=0;
         }
     }
+    cout << "Finished snowball" << endl;
     return this->color;
 }
 
