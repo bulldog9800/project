@@ -33,6 +33,8 @@
 
 using grpc::Channel;
 using grpc::ClientContext;
+using grpc::ClientAsyncResponseReader;
+using grpc::CompletionQueue;
 using grpc::Status;
 using query::Query;
 using query::ColorReply;
@@ -60,12 +62,23 @@ public:
         // Context for the client. It could be used to convey extra information to
         // the server and/or tweak certain RPC behaviors.
         ClientContext context;
-
-        //CompletionQueue cq;
+        Status status;
+        CompletionQueue cq;
 
         // The actual RPC.
-        Status status = stub_->AskColor(&context, request, &reply);
+        //Status status = stub_->AskColor(&context, request, &reply);
         //stub_->AsyncAskColor()
+
+        std::unique_ptr<ClientAsyncResponseReader<ColorReply> > rpc(
+                stub_->PrepareAsyncAskColor(&context, request, &cq));
+
+        rpc->StartCall();
+        rpc->Finish(&reply, &status, (void*)1);
+        void* got_tag;
+        bool ok = false;
+        GPR_ASSERT(cq.Next(&got_tag, &ok));
+        GPR_ASSERT(got_tag == (void*)1);
+        GPR_ASSERT(ok);
 
         // Act upon its status.
         if (status.ok()) {
