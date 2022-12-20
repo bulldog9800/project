@@ -182,7 +182,7 @@ int* Node::askSample(int n,int k, int* count) {
     vector<int> sample=getSample(n,k);
 
     for(auto i : sample) {
-        string get_ready_nodes_cmd = contact_etcd_cmd + "get ready_node" + std::to_string(i);
+        string get_ready_nodes_cmd = contact_etcd_cmd + "get ready_node" + to_string(i);
         string output = exec(get_ready_nodes_cmd.c_str());
         string address=getEtcdValue(output);
 
@@ -266,6 +266,10 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
                     times_file.open(times_file_path,std::ios_base::app);
                     times_file  << this->color <<" " << diff_time << endl;
                     times_file.close();
+                    string cmd = contact_etcd_cmd + "put finish_node" + to_string(this->id) +"/color"  + " " +this->color;
+                    cout << exec(cmd.c_str());
+                    string cmd = contact_etcd_cmd + "put finish_node"+ to_string(this->id) +"/time" + " " + diff_time;
+                    cout << exec(cmd.c_str());
                 }
             }
         }
@@ -280,7 +284,7 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
 
 void server_thread(Node* node) {
     RunServer(node,NULL);
-    string cmd = contact_etcd_cmd + "put ready_node" + std::to_string(node->getId()) + " ready";
+    string cmd = contact_etcd_cmd + "put ready_node" + to_string(node->getId()) + " ready";
     cout << exec(cmd.c_str());
 }
 
