@@ -44,34 +44,15 @@ using std::to_string;
 using std::vector;
 using std::istringstream;
 
-Node::Node(string id){
-    string config_file_name = "config_" + id + ".txt";
-    string path_file = "files/" + config_file_name;
-    const char* path=path_file.c_str();
-
+Node::Node(string id,string color1, int is_byzantine1){
     this->id = stoi(id);
-
+    this->color = color1;
+    stringToColor();
     int port1;
     do {
         port1 = generateRandomPort();
     } while (!checkPort(port1));
-
     this->port = to_string(port1);
-
-    ifstream infile(path);
-    if (!infile.is_open()) {
-        cout << "Couldn't open file!";
-    }
-
-    int id1, is_byzantine1;
-    string color1;
-
-    infile >> id1;
-    infile >> color1;
-    infile >> is_byzantine1;
-
-    this->color=color1;
-    stringToColor();
     this->is_server_ready= false;
     this->to_start= false;
     this->is_byzantine=(bool)(is_byzantine1);
@@ -144,7 +125,7 @@ string Node::getReply(string request) {
     return color;
 }
 
-Byzantine::Byzantine(string id): Node(id) { }
+Byzantine::Byzantine(string id,string color1, int is_byzantine1): Node(id) { }
 
 string Byzantine::getReply(string request) {
     if (request == "R") {
@@ -261,11 +242,6 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
                     undecided = false;
                     this->color_enum=col1;
                     colorToString();
-                    string times_file_path = "files/times.txt";
-                    std::ofstream times_file;
-                    times_file.open(times_file_path,std::ios_base::app);
-                    times_file  << this->color <<" " << diff_time << endl;
-                    times_file.close();
                     string cmd = contact_etcd_cmd + "put finish/color/node" + to_string(this->id) + " " +this->color;
                     cout << exec(cmd.c_str());
                     cmd = contact_etcd_cmd + "put finish/time/node" + to_string(this->id) + " " +ctime(&diff_time);

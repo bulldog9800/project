@@ -51,7 +51,7 @@ class Node {
     string port;
     bool is_server_ready;
     bool to_start;
-    int config_fd;
+    //int config_fd;
     bool is_byzantine;
     time_t start_time;
 public:
@@ -80,7 +80,7 @@ public:
 
 class Byzantine : public Node {
 public:
-    Byzantine(string id);
+    Byzantine(string id, string color1, int is_byzantine1);
     string getReply(string request) override;
 };
 
