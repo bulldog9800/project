@@ -13,7 +13,7 @@ configTuple = namedtuple('run_tuple', ['n', 'k', 'alpha', 'beta', 'reds', 'blues
 
 
 def run_nodes(run_tuple: configTuple):
-    write_config_object(run_tuple)
+    #write_config_object(run_tuple)
 
     colors = ['R', 'B', 'U']
     processes = []
@@ -89,7 +89,7 @@ def exc_etcd_command(command):
 
 
 def main():
-    compile_cmake_project()
+    #compile_cmake_project()
     # tuples = generate_concecutive_tuples()
     # tuples = generate_basic_tuples()
     # tuples = generate_minimum_tuples()
