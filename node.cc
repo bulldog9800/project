@@ -266,10 +266,9 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
                     times_file.open(times_file_path,std::ios_base::app);
                     times_file  << this->color <<" " << diff_time << endl;
                     times_file.close();
-                    cout << "Here before sending finished to etcd" << endl;
-                    string cmd = contact_etcd_cmd + "put finish_node" + to_string(this->id) +"/color"  + " " +this->color;
+                    string cmd = contact_etcd_cmd + "put finish/color/node" + to_string(this->id) + " " +this->color;
                     cout << exec(cmd.c_str());
-                    string cmd = contact_etcd_cmd + "put finish_node"+ to_string(this->id) +"/time" + " " + diff_time;
+                    string cmd = contact_etcd_cmd + "put finish/time/node" + to_string(this->id) + " " +ctime(&diff_time);
                     cout << exec(cmd.c_str());
                 }
             }
