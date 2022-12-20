@@ -96,7 +96,7 @@ def main():
     # tuples = generate_concecutive_tuples()
     # tuples = generate_basic_tuples()
     # tuples = generate_minimum_tuples()
-    tuples = [(configTuple(10, 4, 3, 2, 6, 3, 1))]
+    tuples = [(configTuple(100, 40, 25, 5, 60, 35, 10))]
 
     for t in tuples:
         run_nodes(run_tuple=t)
