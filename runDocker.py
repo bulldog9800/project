@@ -35,11 +35,13 @@ def run_nodes(run_tuple: configTuple):
         processes.append(p)
 
     while True:
-        command1 = "get --prefix finish/"
-        finish_results=exc_etcd_command(command1)
-        results_array = finish_results.split('\n')
-        if len(results_array) == 4*run_tuple.n:
+        finish_results= subprocess.check_output(['docker', 'exec', '-it', 'coordinator', 
+                                        '/usr/local/bin/etcdctl', 'get', '--prefix', 'finish/time', 
+                                        '--print-value-only'])
+        results_array = finish_results.decode().split('\n')
+        if len(results_array) == run_tuple.n-1:
             print("All nodes finished!")
+        """
         command2 = "get --prefix finish/color"
         finish_results = exc_etcd_command(command2)
         color_results_array = finish_results.split('\n')
@@ -61,8 +63,9 @@ def run_nodes(run_tuple: configTuple):
         print("The decision was: ", "Blue" if blues_percentage > reds_percentage else "Red")
         print("The maximal time it took is:" + str(max_time))
         print(max(blues_percentage, reds_percentage) * 100, "% of the nodes reached the same the decision")
-        break
-    sleep(1)
+        """
+        sleep(1)
+    
 
     for p in processes:
         p.kill()
@@ -89,19 +92,19 @@ def exc_etcd_command(command):
         print("Error executing etcdctl command")
         return None
 
-
+def clear_etcd_server():
+    subprocess.run(['docker', 'exec', '-it', 'coordinator', '/usr/local/bin/etcdctl', 'del', '--prefix', ""])
 
 def main():
     #compile_cmake_project()
     # tuples = generate_concecutive_tuples()
     # tuples = generate_basic_tuples()
     # tuples = generate_minimum_tuples()
-    tuples = [(configTuple(100, 40, 25, 5, 60, 35, 10))]
-
+    tuples = [(configTuple(50, 20, 12, 3, 30, 10, 3))]
+    clear_etcd_server()
     for t in tuples:
         run_nodes(run_tuple=t)
-
-
+    
 
 def generate_minimum_tuples():
     tuples = [(configTuple(100, 40, 25, 5, 60, 35, 10)),

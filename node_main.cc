@@ -16,7 +16,10 @@ int main(int argc, char** argv) {
     thread th1(server_thread, n1);
     //thread th2(ready_thread, &n1);
     //ready_thread(n1);
-    while (!(n1->checkIfClusterReady(n)));
+    sleep(5);
+    while (!(n1->checkIfClusterReady(n))) {
+        sleep(1);
+    }
     cout << "Cluster is ready!" << endl;
     n1->Snowball(n, k, alpha, beta);
     th1.join();
