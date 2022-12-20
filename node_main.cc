@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
     thread th1(server_thread, n1);
     //thread th2(ready_thread, &n1);
     //ready_thread(n1);
-    sleep(5);
+    sleep(10);
     while (!(n1->checkIfClusterReady(n))) {
         sleep(1);
     }
