@@ -244,7 +244,7 @@ string Node::Snowball(int n, int k, int alpha, int beta) {
                     colorToString();
                     string cmd = contact_etcd_cmd + "put finish/color/node" + to_string(this->id) + " " +this->color;
                     cout << exec(cmd.c_str());
-                    cmd = contact_etcd_cmd + "put finish/time/node" + to_string(this->id) + " " +ctime(&diff_time);
+                    cmd = contact_etcd_cmd + "put finish/time/node" + to_string(this->id) + " " + to_string(int(diff_time));
                     cout << exec(cmd.c_str());
                 }
             }

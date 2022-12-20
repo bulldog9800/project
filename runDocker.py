@@ -62,6 +62,7 @@ def run_nodes(run_tuple: configTuple):
         print("The maximal time it took is:" + str(max_time))
         print(max(blues_percentage, reds_percentage) * 100, "% of the nodes reached the same the decision")
         break
+    sleep(1)
 
     for p in processes:
         p.kill()
