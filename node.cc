@@ -125,7 +125,7 @@ string Node::getReply(string request) {
     return color;
 }
 
-Byzantine::Byzantine(string id,string color1, int is_byzantine1): Node(id) { }
+Byzantine::Byzantine(string id,string color1, int is_byzantine1): Node(id, color1, is_byzantine1) { }
 
 string Byzantine::getReply(string request) {
     if (request == "R") {

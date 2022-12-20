@@ -27,9 +27,11 @@ def run_nodes(run_tuple: configTuple):
         elif i <= run_tuple.reds + run_tuple.blues:
             color = 'B'
 
-        p = subprocess.run(["docker", "run", "-d", "--name", f"node{i}", "--entrypoint", "node_main.cc" , "ubuntu:verion2",
-                         f"{i}", f"{run_tuple.n}", f"{run_tuple.k}", f"{run_tuple.alpha}", f"{run_tuple.beta}",
-                          color, byzantine])
+        p = subprocess.run(["docker", "run", "--net", "snowball_cluster", "-d",
+         "--name", f"node{i}", "my_ubuntu", 
+        "/project/examples/cpp/query/cmake/build/node_main",
+        f"{i}", f"{run_tuple.n}", f"{run_tuple.k}", f"{run_tuple.alpha}", f"{run_tuple.beta}", color, byzantine])
+        
         processes.append(p)
 
     while True:

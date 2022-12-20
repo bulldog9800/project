@@ -55,7 +55,7 @@ class Node {
     bool is_byzantine;
     time_t start_time;
 public:
-    Node(string id);
+    Node(string id, string color1, int is_byzantine1);
     int getId();
     string getColor();
     string getPort();

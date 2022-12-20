@@ -1,6 +1,6 @@
 #include "node.hpp"
 
-Node* returnNode(string id);
+Node* returnNode(string id, string color,int is_byzantine);
 
 int main(int argc, char** argv) {
     assert(argc > 1);
@@ -26,7 +26,6 @@ int main(int argc, char** argv) {
 }
 
 Node* returnNode(string id, string color,int is_byzantine) {
-
     if (is_byzantine) {
         return new Byzantine(id,color,is_byzantine);
     } else {
