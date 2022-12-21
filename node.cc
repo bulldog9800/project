@@ -128,10 +128,15 @@ string Node::getReply(string request) {
 Byzantine::Byzantine(string id,string color1, int is_byzantine1): Node(id, color1, is_byzantine1) { }
 
 string Byzantine::getReply(string request) {
-    if (request == "R") {
-        return "B";
+    int bit = rand() % 2;
+    if (bit) {
+        if (request == "R") {
+            return "B";
+        } else {
+            return "R";
+        }
     } else {
-        return "R";
+        return "";
     }
 }
 
