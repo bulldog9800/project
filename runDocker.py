@@ -100,7 +100,7 @@ def main():
     # tuples = generate_concecutive_tuples()
     # tuples = generate_basic_tuples()
     # tuples = generate_minimum_tuples()
-    tuples = [(configTuple(50, 20, 12, 3, 30, 10, 3))]
+    tuples = [(configTuple(30, 10, 6, 2, 20, 5, 1))]
     clear_etcd_server()
     for t in tuples:
         run_nodes(run_tuple=t)
