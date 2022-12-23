@@ -15,9 +15,9 @@ configTuple = namedtuple('run_tuple', ['n', 'k', 'alpha', 'beta', 'reds', 'blues
 
 
 def run_nodes(run_tuple: configTuple):
-
-    colors = ['R', 'B', 'U']
-    processes = []
+    clear_etcd_server()
+    delete_Containers()
+    #processes = []
 
     for i in range(1, run_tuple.n + 1):
         color = 'U'
@@ -33,7 +33,7 @@ def run_nodes(run_tuple: configTuple):
         "/project/examples/cpp/query/cmake/build/node_main",
         f"{i}", f"{run_tuple.n}", f"{run_tuple.k}", f"{run_tuple.alpha}", f"{run_tuple.beta}", color, byzantine])
         
-        processes.append(p)
+        #processes.append(p)
 
     while True:
         finish_results= subprocess.check_output(['docker', 'exec', '-it', 'coordinator', 
@@ -46,7 +46,7 @@ def run_nodes(run_tuple: configTuple):
         sleep(5)
 
     max_time=0
-    for t in time_results_array:
+    for t in results_array[:-1]:
         t1 = t.rstrip()
         time1 = int(t1)
         max_time = max(max_time, int(time1))
@@ -64,86 +64,60 @@ def run_nodes(run_tuple: configTuple):
         elif color1 == 'B':
             blue_nodes += 1
 
+    blues_percentage = float(blue_nodes) / float(run_tuple.n)
+    reds_percentage = float(red_nodes) / float(run_tuple.n)
     color2= "B" if blues_percentage > reds_percentage else "R"
     percentage = max(blues_percentage, reds_percentage) * 100
 
     print("The decision was: ", color2)
     print("The maximal time it took is:" + str(max_time))
     print(percentage, "% of the nodes reached the same the decision")
-
-
-    
-
-    for p in processes:
-        p.kill()
-
-
-# def write_config_object(run_tuple: configTuple):
-#     general_config_file = open("files/general_config.txt", "w")
-#     general_config_file.write(str(run_tuple.n) + "\n")
-#     general_config_file.write(str(run_tuple.k) + "\n")
-#     general_config_file.write(str(run_tuple.alpha) + "\n")
-#     general_config_file.write(str(run_tuple.beta) + "\n")
-#     general_config_file.close()
-
-
-# def compile_cmake_project():
-#     subprocess.run(["cmake", "-DCMAKE_PREFIX_PATH=$MY_INSTALL_DIR ../..", "cmake/build"])
-#     subprocess.run(["make", "-j4"])
-#
-# def exc_etcd_command(command):
-#     result = subprocess.run(["etcdctl", "--endpoints 172.20.0.5:2379", command], stdout=subprocess.PIPE)
-#     if result.returncode == 0:
-#         return result.stdout.decode
-#     else:
-#         print("Error executing etcdctl command")
-#         return None
+    return (max_time,color2,percentage)
 
 def clear_etcd_server():
     subprocess.run(['docker', 'exec', '-it', 'coordinator', '/usr/local/bin/etcdctl', 'del', '--prefix', ""])
 
+def delete_Containers():
+    # Get a list of all containers with a name starting with "node"
+    containers = subprocess.run(
+        ["docker", "container", "ls", "-a", "-q", "--filter", "name=node*"],
+        capture_output=True,
+        text=True,
+    ).stdout.strip().split("\n")
 
-
-
-# def graphAux(x, y, x_name, y_name, title_name):
-#     plt.plot(x, y)
-#     plt.title(title_name)
-#     plt.xlabel(x_name)
-#     plt.ylabel(y_name)
-#     plt.show()
-
-
-
-configTuple = namedtuple('run_tuple', ['n', 'k', 'alpha', 'beta', 'reds', 'blues', 'byzantines'])
-
+    # Delete all of the containers
+    for container in containers:
+        subprocess.run(["docker", "container", "rm", "-f", container])
 
 def generate_tuples():
-    # n_unstable()
-    k_unstable()
-    # alpha_unstable()
-    # beta_unstable()
-    # byzantine_unstable()
-    # starting_state_unstable()
+    #n_unstable()
+    #k_unstable()
+    #alpha_unstable()
+    #beta_unstable()
+    byzantine_unstable()
+    #starting_state_unstable()
 
 
 def n_unstable():
     results, n_values = [], []
     for n in range(10, 30, 5):
-        k, beta, byzantine, red, uncolored = int(2*n/5), 3, int(0.1*n)+1, int(0.4*n), int(0.1*n)
-        alpha = int(k/2)+10.1*n
+        k, beta, byzantine, red, uncolored = int(0.4*n), 3, int(0.1*n)+1, int(0.4*n), int(0.1*n)
+        alpha = int(k/2)+1
         blue = n - red - uncolored
         curr_tuple = configTuple(n, k, alpha, beta, red, blue, byzantine)
         time, color, percentage = run_nodes(run_tuple=curr_tuple)
         results.append((time, color, percentage))
         n_values.append(n)
-
-        title = 'Time as a function of number of nodes'
-        plot_results(unstable_param='n', param_values=n_values, results=results, title=title)
+    
+    clear_etcd_server()
+    delete_Containers()
+    title = 'Time as a function of number of nodes'
+    plot_results(unstable_param='n', param_values=n_values, results=results, title=title)
 
 
 def k_unstable():
     results, k_values = [], []
-    for k in [5,10,15]:
+    for k in [5,7,10,12,15]:
         n, alpha, beta = 25, int(k/2)+1, 3
         byzantine, red, uncolored = int(0.1*n)+1, 0.4*n, int(0.1*n)
         blue = n - red - uncolored
@@ -151,14 +125,15 @@ def k_unstable():
         time, color, percentage = run_nodes(run_tuple=curr_tuple)
         results.append((time, color, percentage))
         k_values.append(k)
-
-        title = 'Time as a function of sample size'
-        plot_results(unstable_param='k', param_values=k_values, results=results, title=title)
+    clear_etcd_server()
+    delete_Containers()
+    title = 'Time as a function of sample size'
+    plot_results(unstable_param='k', param_values=k_values, results=results, title=title)
 
 
 def alpha_unstable():
     results, alpha_values = [], []
-    for alpha in [6,7,10]:
+    for alpha in [6,7,8,10]:
         n, k, beta = 25, 10, 3
         byzantine, red, uncolored = int(0.1*n)+1, 0.4*n, int(0.1*n)
         blue = n - red - uncolored
@@ -166,15 +141,16 @@ def alpha_unstable():
         time, color, percentage = run_nodes(run_tuple=curr_tuple)
         results.append((time, color, percentage))
         alpha_values.append(alpha)
-
-        title = 'Time as a function of alpha'
-        plot_results(unstable_param='alpha', param_values=alpha_values, results=results, title=title)
+    clear_etcd_server()
+    delete_Containers()
+    title = 'Time as a function of alpha'
+    plot_results(unstable_param='alpha', param_values=alpha_values, results=results, title=title)
 
 
 def beta_unstable():
     results, beta_values = [], []
     for beta in [2,3,4]:
-        n, k, alpha = 25, 10, 6
+        n, k, alpha = 25, 10, 7
         byzantine, red, uncolored = int(0.1*n)+1, 0.4*n, int(0.1*n)
         blue = n - red - uncolored
         curr_tuple = configTuple(n, k, alpha, beta, red, blue, byzantine)
@@ -182,51 +158,54 @@ def beta_unstable():
         results.append((time, color, percentage))
         beta_values.append(beta)
 
-        title = 'Time as a function of beta'
-        plot_results(unstable_param='beta', param_values=beta_values, results=results, title=title)
+    title = 'Time as a function of beta'
+    plot_results(unstable_param='beta', param_values=beta_values, results=results, title=title)
 
 
 def byzantine_unstable():
     results, byzantine_values = [], []
-    for byzantine in [3,7,15]:
-        n, k, alpha,beta = 25, 10, 6, 3
+    for byzantine in [8,9,11,13]:
+        n, k, alpha,beta = 25, 10, 7, 3
         red, uncolored = 0.4*n, int(0.1*n)
         blue = n - red - uncolored
         curr_tuple = configTuple(n, k, alpha, beta, red, blue, byzantine)
         time, color, percentage = run_nodes(run_tuple=curr_tuple)
         results.append((time, color, percentage))
         byzantine_values.append(byzantine)
-
-        title = 'Time as a function of number of Byzantine nodes'
-        plot_results(unstable_param='byzantine', param_values=byzantine_values, results=results, title=title)
+    clear_etcd_server()
+    delete_Containers()
+    title = 'Time as a function of number of Byzantine nodes'
+    plot_results(unstable_param='byzantine', param_values=byzantine_values, results=results, title=title)
 
 
 def starting_state_unstable():
     results, uncolored_values = [], []
-    for uncolored in [5,10,15]:
-        n, k, alpha,beta = 25, 10, 6, 3
+    for uncolored in [0,5,10,15]:
+        n, k, alpha,beta = 25, 10, 7, 3
         byzantine, red = int(0.1*n)+1, 0.4*n
         blue = n - red - uncolored
         curr_tuple = configTuple(n, k, alpha, beta, red, blue, byzantine)
         time, color, percentage = run_nodes(run_tuple=curr_tuple)
         results.append((time, color, percentage))
-        uncolored_values.append(k)
-
-        title = 'Time as a function of number of Uncolored nodes'
-        plot_results(unstable_param='uncolored', param_values=uncolored_values, results=results, title=title)
+        uncolored_values.append(uncolored)
+    clear_etcd_server()
+    delete_Containers()
+    title = 'Time as a function of number of Uncolored nodes'
+    plot_results(unstable_param='uncolored', param_values=uncolored_values, results=results, title=title)
 
 
 def plot_results(unstable_param, param_values, results, title):
     time_results = [result[0] for result in results]
     plt.scatter(param_values, time_results)
-
+    plt.plot(param_values, time_results)
     plt.xlabel(unstable_param)
     plt.ylabel('time [secs]')
     plt.title(title)
+    
 
     for i, param_value in enumerate(param_values):
         decision = 'RED' if results[i][1] == 'R' else 'BLUE'
-        plt.text(param_value, time_results[i], f'(decision={decision}, percentage={results[i][2]})')
+        plt.text(param_value, time_results[i], f'(decision={decision}, percentage={results[i][2]})',ha='center',va='center')
 
     plt.show()
 
@@ -239,7 +218,7 @@ def main():
     # tuples = generate_minimum_tuples()
     #tuples = [(configTuple(30, 10, 6, 2, 20, 5, 1))]
     #tuples = [(configTuple(50, 20, 12, 3, 30, 10, 3))]
-    clear_etcd_server()
+    #clear_etcd_server()
     generate_tuples()
 
 
